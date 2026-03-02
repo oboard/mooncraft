@@ -57,19 +57,18 @@ pub extern "js" fn js_set_texture(
   #| }
 
 ///|
-pub extern "js" fn js_start_animation_demo(
+pub extern "js" fn js_start_animation_cycle(
   entity_id : String,
+  clips : Array[String],
   interval_ms : Int,
   timeout_ms : Int,
 ) -> Unit =
-  #| (entityId, intervalMs, timeoutMs) => {
-  #|   const clips = [
-  #|     "animation.zombie.walk",
-  #|     "animation.zombie.attack",
-  #|     "riding",
-  #|     "none",
-  #|   ];
-  #|   const stateKey = "__mc_entity_anim_demo_state";
+  #| (entityId, clips, intervalMs, timeoutMs) => {
+  #|   if (!Array.isArray(clips) || clips.length === 0) {
+  #|     console.warn("[entity] startAnimationCycle requires non-empty clip list", entityId);
+  #|     return;
+  #|   }
+  #|   const stateKey = "__mc_entity_animation_cycle_state";
   #|   const prev = globalThis[stateKey];
   #|   if (prev && prev.timer != null) {
   #|     clearInterval(prev.timer);
@@ -83,7 +82,7 @@ pub extern "js" fn js_start_animation_demo(
   #|       if (Date.now() - started <= timeout) {
   #|         setTimeout(tickReady, 50);
   #|       } else {
-  #|         console.warn("[entity] animation demo api not ready", entityId);
+  #|         console.warn("[entity] animation cycle api not ready", entityId);
   #|       }
   #|       return;
   #|     }
@@ -92,7 +91,7 @@ pub extern "js" fn js_start_animation_demo(
   #|       const clip = clips[clipIndex % clips.length];
   #|       clipIndex += 1;
   #|       Promise.resolve(api.setAnimation(entityId, clip)).catch((err) => {
-  #|         console.warn("[entity] demo setAnimation failed", entityId, clip, err);
+  #|         console.warn("[entity] cycle setAnimation failed", entityId, clip, err);
   #|       });
   #|     };
   #|     playNext();
@@ -103,9 +102,9 @@ pub extern "js" fn js_start_animation_demo(
   #| }
 
 ///|
-pub extern "js" fn js_stop_animation_demo() -> Unit =
+pub extern "js" fn js_stop_animation_cycle() -> Unit =
   #| () => {
-  #|   const stateKey = "__mc_entity_anim_demo_state";
+  #|   const stateKey = "__mc_entity_animation_cycle_state";
   #|   const state = globalThis[stateKey];
   #|   if (state && state.timer != null) {
   #|     clearInterval(state.timer);
@@ -114,25 +113,34 @@ pub extern "js" fn js_stop_animation_demo() -> Unit =
   #| }
 
 ///|
-pub fn set_animation(entity_id : String, clip : String) -> Unit {
-  js_set_animation(entity_id, clip, DEFAULT_API_TIMEOUT_MS)
+pub fn set_animation(
+  entity_id : String,
+  clip : String,
+  timeout_ms? : Int = DEFAULT_API_TIMEOUT_MS,
+) -> Unit {
+  js_set_animation(entity_id, clip, timeout_ms)
 }
 
 ///|
-pub fn set_texture(entity_id : String, texture_path : String) -> Unit {
-  js_set_texture(entity_id, texture_path, DEFAULT_API_TIMEOUT_MS)
+pub fn set_texture(
+  entity_id : String,
+  texture_path : String,
+  timeout_ms? : Int = DEFAULT_API_TIMEOUT_MS,
+) -> Unit {
+  js_set_texture(entity_id, texture_path, timeout_ms)
 }
 
 ///|
-pub fn start_zombie_animation_demo() -> Unit {
-  js_start_animation_demo(
-    "zombie_0",
-    DEFAULT_DEMO_INTERVAL_MS,
-    DEFAULT_API_TIMEOUT_MS,
-  )
+pub fn start_animation_cycle(
+  entity_id : String,
+  clips : Array[String],
+  interval_ms? : Int = DEFAULT_DEMO_INTERVAL_MS,
+  timeout_ms? : Int = DEFAULT_API_TIMEOUT_MS,
+) -> Unit {
+  js_start_animation_cycle(entity_id, clips, interval_ms, timeout_ms)
 }
 
 ///|
-pub fn stop_animation_demo() -> Unit {
-  js_stop_animation_demo()
+pub fn stop_animation_cycle() -> Unit {
+  js_stop_animation_cycle()
 }

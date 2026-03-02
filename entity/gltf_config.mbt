@@ -1,9 +1,41 @@
 ///|
+/// Texture override for one material index.
+pub struct TextureIndexOverride {
+  index : Int
+  texture : String
+}
+
+///|
+/// Texture override for one material name.
+pub struct MaterialTextureOverride {
+  material : String
+  texture : String
+}
+
+///|
+pub fn texture_index_override(
+  index : Int,
+  texture : String,
+) -> TextureIndexOverride {
+  TextureIndexOverride::{ index, texture }
+}
+
+///|
+pub fn material_texture_override(
+  material : String,
+  texture : String,
+) -> MaterialTextureOverride {
+  MaterialTextureOverride::{ material, texture }
+}
+
+///|
 /// JS-facing glTF entity config consumed by `dist/js/gltf-entity-renderer.js`.
 pub struct GltfEntityConfig {
   id : String
   url : String
   texture : String
+  texture_overrides : Array[TextureIndexOverride]
+  material_texture_overrides : Array[MaterialTextureOverride]
   position : Array[Double]
   rotation : Array[Double]
   scale : Array[Double]
@@ -13,37 +45,41 @@ pub struct GltfEntityConfig {
 }
 
 ///|
-fn zombie_entity(
+pub fn entity_config(
   id : String,
-  x : Double,
-  y : Double,
-  z : Double,
-  animation : String,
+  url : String,
+  texture? : String = "",
+  texture_overrides? : Array[TextureIndexOverride] = [],
+  material_texture_overrides? : Array[MaterialTextureOverride] = [],
+  position? : Array[Double] = [0.0, 0.0, 0.0],
+  rotation? : Array[Double] = [0.0, 0.0, 0.0, 1.0],
+  scale? : Array[Double] = [1.0, 1.0, 1.0],
+  animation? : String = "",
+  speed? : Double = 1.0,
+  looped? : Bool = true,
 ) -> GltfEntityConfig {
   GltfEntityConfig::{
     id,
-    url: "./assets/models/zombie.gltf",
-    texture: "./assets/images/entity/zombie.png",
-    position: [x, y, z],
-    rotation: [0.0, 0.0, 0.0, 1.0],
-    scale: [1.0, 1.0, 1.0],
+    url,
+    texture,
+    texture_overrides,
+    material_texture_overrides,
+    position,
+    rotation,
+    scale,
     animation,
-    speed: 1.0,
-    looped: true,
+    speed,
+    looped,
   }
 }
 
 ///|
-/// Default zombie demo entities loaded at startup.
-pub fn zombie_demo_entities() -> Array[GltfEntityConfig] {
-  [
-    zombie_entity("zombie_0", 0.0, 68.0, 0.0, "animation.zombie.walk"),
-    zombie_entity("zombie_1", 2.0, 68.0, 0.0, "animation.zombie.attack"),
-  ]
+/// Publish explicit entity configs to JS runtime (`window.mcGltfEntities`).
+pub fn publish_entities(entities : Array[GltfEntityConfig]) -> Unit {
+  @ffi.cast_global_set("mcGltfEntities", entities)
 }
 
 ///|
-/// Publish entity configs to JS runtime (`window.mcGltfEntities`).
-pub fn install_demo_entities() -> Unit {
-  @ffi.cast_global_set("mcGltfEntities", zombie_demo_entities())
+pub fn clear_entities() -> Unit {
+  publish_entities([])
 }

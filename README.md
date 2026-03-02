@@ -7,7 +7,7 @@
 ### Build
 
 ```sh
-moon build --target-dir ./dist
+moon build --release --target-dir ./dist
 ```
 
 ### Run
@@ -69,19 +69,44 @@ await window.mcGltfEntityApi.setTexture("zombie_0", "./assets/images/entity/zomb
 await window.mcGltfEntityApi.setAnimation("zombie_0", "none");
 ```
 
-MoonBit-side entity API:
+MoonBit-side unified entity API:
 
-- `@entity.install_demo_entities()` publishes `mcGltfEntities`
-- `@entity.start_zombie_animation_demo()` starts the zombie animation cycle
-- `@entity.set_animation(id, clip)` / `@entity.set_texture(id, path)` call JS runtime API from MBT
+- config publishing:
+  - `@entity.entity_config(...)`
+  - `@entity.publish_entities(entities)`
+  - `@entity.clear_entities()`
+- runtime controls:
+  - `@entity.set_animation(id, clip)`
+  - `@entity.set_texture(id, path)`
+  - `@entity.start_animation_cycle(id, clips, interval_ms=...)`
+  - `@entity.stop_animation_cycle()`
+- demo entrypoint:
+  - `@entity.install_default_zombie_demo(world)` (details centralized in `entity/demo_zombie.mbt`)
+- strong typed override fields:
+  - `texture_overrides : Array[@entity.TextureIndexOverride]`
+  - `material_texture_overrides : Array[@entity.MaterialTextureOverride]`
+- override helper constructors:
+  - `@entity.texture_index_override(index, texture)`
+  - `@entity.material_texture_override(material, texture)`
+
+MoonBit typed override example:
+
+```mbt
+let cfg = @entity.entity_config(
+  "zombie_skin_a",
+  "./assets/models/zombie.gltf",
+  texture_overrides=[@entity.texture_index_override(0, "./assets/images/entity/zombie.png")],
+  material_texture_overrides=[@entity.material_texture_override("Body", "./assets/images/entity/zombie.png")],
+  position=[0.0, 68.0, 0.0],
+  animation="animation.zombie.walk",
+)
+```
 
 Observable demo (with animation):
 
-```js
-// moonbit `main` now auto-starts zombie animation demo by default.
-// manual JS controls are still available:
-await window.mcStartEntityAnimationDemo("zombie_0", 1500);
-window.mcStopEntityAnimationDemo();
+```mbt
+// single demo entrypoint (demo details are centralized in entity/demo_zombie.mbt)
+@entity.install_default_zombie_demo(world)
 ```
 
 Current implementation is aimed at Blockbench-exported glTF:

@@ -1,0 +1,75 @@
+///|
+pub const ZOMBIE_MODEL_URL : String = "./assets/models/zombie.gltf"
+
+///|
+pub const ZOMBIE_TEXTURE_URL : String = "./assets/images/entity/zombie.png"
+
+///|
+pub const ZOMBIE_Y_OFFSET : Int = 2
+
+///|
+fn surface_position(
+  world : @level.World,
+  wx : Int,
+  wz : Int,
+  y_offset? : Int = ZOMBIE_Y_OFFSET,
+) -> Array[Double] {
+  let y = @level.surface_height(world, wx, wz) + y_offset
+  [wx.to_double() + 0.5, y.to_double(), wz.to_double() + 0.5]
+}
+
+///|
+pub fn zombie_demo_entities(world : @level.World) -> Array[GltfEntityConfig] {
+  let base_wx = @player.SPAWN_CHUNK_X * @level.CHUNK_X_SIZE + @player.SPAWN_LOCAL_X
+  let base_wz = @player.SPAWN_CHUNK_Z * @level.CHUNK_Z_SIZE + @player.SPAWN_LOCAL_Z
+  let wx0 = base_wx + 2
+  let wz0 = base_wz
+  let wx1 = base_wx + 6
+  let wz1 = base_wz + 1
+  [
+    entity_config(
+      "zombie_0",
+      ZOMBIE_MODEL_URL,
+      texture=ZOMBIE_TEXTURE_URL,
+      position=surface_position(world, wx0, wz0),
+      animation="animation.zombie.walk",
+      speed=1.0,
+      looped=true,
+    ),
+    entity_config(
+      "zombie_1",
+      ZOMBIE_MODEL_URL,
+      texture=ZOMBIE_TEXTURE_URL,
+      position=surface_position(world, wx1, wz1),
+      animation="animation.zombie.attack",
+      speed=1.0,
+      looped=true,
+    ),
+  ]
+}
+
+///|
+pub fn zombie_demo_clips() -> Array[String] {
+  [
+    "animation.zombie.walk",
+    "animation.zombie.attack",
+    "riding",
+    "none",
+  ]
+}
+
+///|
+/// Single entry for demo setup: install entities and start animation cycle.
+pub fn install_zombie_demo(
+  world : @level.World,
+  entity_id : String,
+  interval_ms? : Int = DEFAULT_DEMO_INTERVAL_MS,
+) -> Unit {
+  publish_entities(zombie_demo_entities(world))
+  start_animation_cycle(entity_id, zombie_demo_clips(), interval_ms=interval_ms)
+}
+
+///|
+pub fn install_default_zombie_demo(world : @level.World) -> Unit {
+  install_zombie_demo(world, "zombie_0")
+}

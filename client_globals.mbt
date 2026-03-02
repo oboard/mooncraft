@@ -8,6 +8,7 @@ fn[V] set_global(name : String, value : V) -> Unit {
 ///|
 /// Register scalar config and initial world state for JS bootstrap.
 fn register_config(world : @level.World, chunk_data : Array[UInt]) -> Unit {
+  set_global("mcUpdateLabel", "6:21")
   set_global("mcChunkSize", @level.CHUNK_X_SIZE)
   set_global("mcChunkData", chunk_data)
   set_global("mcWorldMinY", world.min_y())
@@ -29,8 +30,6 @@ fn register_config(world : @level.World, chunk_data : Array[UInt]) -> Unit {
   set_global("mcSpawnLocalZ", @player.SPAWN_LOCAL_Z)
   set_global("mcSpawnSurfaceOffset", @player.SPAWN_SURFACE_OFFSET)
   set_global("mcSpawnFallbackY", @player.SPAWN_FALLBACK_Y)
-  @entity.install_demo_entities()
-  set_global("mcAutoEntityAnimationDemo", false)
 
   // Leaf shader pipeline assets.
   set_global("mcOakLeavesVertexShader", @genus.leaf_vertex_shader)

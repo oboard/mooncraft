@@ -17,7 +17,7 @@ import {
   loadEntityConfigs,
 } from "./gltf-entity-renderer.js";
 
-const UPDATE_LABEL = `(3:00)`
+const UPDATE_LABEL = window.mcUpdateLabel;
 const DEFAULT_MESH_SECTION_SIZE = 8;
 
 function getBlockShapeDesc(longId) {

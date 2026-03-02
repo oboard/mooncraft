@@ -829,6 +829,62 @@ function createGltfEntityRenderer(gl) {
           }
         }
       }
+      const typedIndexOverrides = Array.isArray(cfg.texture_overrides)
+        ? cfg.texture_overrides
+        : Array.isArray(cfg.textureOverrides)
+          ? cfg.textureOverrides
+          : null;
+      if (Array.isArray(typedIndexOverrides)) {
+        for (const entry of typedIndexOverrides) {
+          const index = Number(entry?.index);
+          const url = typeof entry?.texture === "string"
+            ? entry.texture
+            : typeof entry?.path === "string"
+              ? entry.path
+              : typeof entry?.url === "string"
+                ? entry.url
+                : "";
+          if (!Number.isInteger(index) || index < 0) continue;
+          if (url.length === 0) continue;
+          try {
+            const tex = await loadExternalTexture(url);
+            if (tex) textureOverridesByIndex.set(index, tex);
+          } catch (err) {
+            console.warn("[gltf] failed to load typed material-index texture override", index, url, err);
+          }
+        }
+      }
+      const typedNameOverrides = Array.isArray(cfg.material_texture_overrides)
+        ? cfg.material_texture_overrides
+        : Array.isArray(cfg.materialTextureOverrides)
+          ? cfg.materialTextureOverrides
+          : null;
+      if (Array.isArray(typedNameOverrides)) {
+        for (const entry of typedNameOverrides) {
+          const name = typeof entry?.material === "string"
+            ? entry.material
+            : typeof entry?.name === "string"
+              ? entry.name
+              : "";
+          const url = typeof entry?.texture === "string"
+            ? entry.texture
+            : typeof entry?.path === "string"
+              ? entry.path
+              : typeof entry?.url === "string"
+                ? entry.url
+                : "";
+          if (name.length === 0 || url.length === 0) continue;
+          try {
+            const tex = await loadExternalTexture(url);
+            if (tex) textureOverridesByName.set(name, tex);
+            if (!knownMaterialNames.has(name)) {
+              console.warn("[gltf] unknown material name in typed override", name, cfg.url);
+            }
+          } catch (err) {
+            console.warn("[gltf] failed to load typed material-name texture override", name, url, err);
+          }
+        }
+      }
       if (
         !defaultTextureOverride &&
         textureOverridesByIndex.size === 0 &&
@@ -837,7 +893,7 @@ function createGltfEntityRenderer(gl) {
         asset.materials.every((m) => !m.hasTexture)
       ) {
         console.warn(
-          "[gltf] model has no embedded texture; specify `texture`, `textures`, or `materialTextures` in entity config",
+          "[gltf] model has no embedded texture; specify `texture`, typed overrides, `textures`, or `materialTextures` in entity config",
           cfg.url,
         );
         continue;
