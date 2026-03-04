@@ -5,6 +5,13 @@ const GLTF_TRIANGLES = 4;
 const DEFAULT_MANIFEST_URL = "./assets/models/entities.json";
 const LOOK_EPSILON = 1e-6;
 const LOOK_PITCH_LIMIT = Math.PI * 0.499;
+const ENTITY_YAW_OFFSET = Math.PI;
+const ENTITY_YAW_OFFSET_QUAT = [
+  0,
+  Math.sin(ENTITY_YAW_OFFSET * 0.5),
+  0,
+  Math.cos(ENTITY_YAW_OFFSET * 0.5),
+];
 
 const COMPONENTS_PER_TYPE = {
   SCALAR: 1,
@@ -120,6 +127,11 @@ function quatMul(out, a, b) {
   out[2] = aw * bz + ax * by - ay * bx + az * bw;
   out[3] = aw * bw - ax * bx - ay * by - az * bz;
   return out;
+}
+
+function quatApplyEntityYawOffset(out, q) {
+  quatMul(out, ENTITY_YAW_OFFSET_QUAT, q);
+  return quatNormalize(out, out);
 }
 
 function quatFromYawPitch(out, yaw, pitch) {
@@ -928,7 +940,8 @@ function createGltfEntityRenderer(gl) {
       const nodeWorld = asset.nodes.map(() => mat4Create());
       const model = mat4Create();
       const pos = Array.isArray(cfg.position) ? [Number(cfg.position[0]) || 0, Number(cfg.position[1]) || 0, Number(cfg.position[2]) || 0] : [0, 0, 0];
-      const rot = Array.isArray(cfg.rotation) ? quatNormalize([0, 0, 0, 1], [Number(cfg.rotation[0]) || 0, Number(cfg.rotation[1]) || 0, Number(cfg.rotation[2]) || 0, Number(cfg.rotation[3]) || 1]) : [0, 0, 0, 1];
+      const cfgRot = Array.isArray(cfg.rotation) ? quatNormalize([0, 0, 0, 1], [Number(cfg.rotation[0]) || 0, Number(cfg.rotation[1]) || 0, Number(cfg.rotation[2]) || 0, Number(cfg.rotation[3]) || 1]) : [0, 0, 0, 1];
+      const rot = quatApplyEntityYawOffset([0, 0, 0, 1], cfgRot);
       const sc = Array.isArray(cfg.scale) ? [Number(cfg.scale[0]) || 1, Number(cfg.scale[1]) || 1, Number(cfg.scale[2]) || 1] : [1, 1, 1];
       mat4FromTRS(model, pos, rot, sc);
       let animIndex = -1;
@@ -1065,7 +1078,8 @@ function createGltfEntityRenderer(gl) {
       console.warn("[gltf] setRotationQuat: invalid quaternion", q, "entity:", inst.id);
       return false;
     }
-    quatNormalize(inst.modelRot, q);
+    quatNormalize(q, q);
+    quatApplyEntityYawOffset(inst.modelRot, q);
     return updateInstanceModel(inst);
   };
 
