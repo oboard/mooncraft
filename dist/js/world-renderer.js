@@ -1262,6 +1262,19 @@ function renderTestChunk({
     setTexture(entityId, path) {
       return gltfEntitiesReady.then(() => gltfEntityRenderer.setTexture(entityId, path));
     },
+    setRotationQuat(entityId, x, y, z, w) {
+      return gltfEntitiesReady.then(() =>
+        gltfEntityRenderer.setRotationQuat(entityId, x, y, z, w));
+    },
+    setYaw(entityId, yaw) {
+      return gltfEntitiesReady.then(() => gltfEntityRenderer.setYaw(entityId, yaw));
+    },
+    lookAtXz(entityId, x, z) {
+      return gltfEntitiesReady.then(() => gltfEntityRenderer.lookAtXz(entityId, x, z));
+    },
+    lookAtXyz(entityId, x, y, z) {
+      return gltfEntitiesReady.then(() => gltfEntityRenderer.lookAtXyz(entityId, x, y, z));
+    },
     getEntityIds() {
       return gltfEntityRenderer.getEntityIds();
     },

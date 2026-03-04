@@ -46,6 +46,9 @@ Runtime API (available after renderer init):
 // by entity id from config, or numeric index
 await window.mcGltfEntityApi.setAnimation("zombie_0", "animation.zombie.walk");
 await window.mcGltfEntityApi.setTexture("zombie_0", "./assets/images/entity/zombie.png");
+await window.mcGltfEntityApi.setYaw("zombie_0", Math.PI * 0.5);
+await window.mcGltfEntityApi.lookAtXz("zombie_0", 12, 8); // yaw only
+await window.mcGltfEntityApi.lookAtXyz("zombie_0", 12, 70, 8); // yaw + pitch
 
 // disable animation
 await window.mcGltfEntityApi.setAnimation("zombie_0", "none");
@@ -60,6 +63,10 @@ MoonBit-side unified entity API:
 - runtime controls:
   - `@entity.set_animation(id, clip)`
   - `@entity.set_texture(id, path)`
+  - `@entity.set_rotation_quat(id, x, y, z, w)`
+  - `@entity.set_yaw(id, yaw)`
+  - `@entity.look_at_xz(id, x, z)`
+  - `@entity.look_at_xyz(id, x, y, z)`
   - `@entity.start_animation_cycle(id, clips, interval_ms=...)`
   - `@entity.stop_animation_cycle()`
 - demo entrypoint:

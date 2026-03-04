@@ -3,6 +3,8 @@ const GLB_JSON_CHUNK = 0x4e4f534a;
 const GLB_BIN_CHUNK = 0x004e4942;
 const GLTF_TRIANGLES = 4;
 const DEFAULT_MANIFEST_URL = "./assets/models/entities.json";
+const LOOK_EPSILON = 1e-6;
+const LOOK_PITCH_LIMIT = Math.PI * 0.499;
 
 const COMPONENTS_PER_TYPE = {
   SCALAR: 1,
@@ -108,6 +110,30 @@ function quatNormalize(out, q) {
   out[2] = q[2] * inv;
   out[3] = q[3] * inv;
   return out;
+}
+
+function quatMul(out, a, b) {
+  const ax = a[0], ay = a[1], az = a[2], aw = a[3];
+  const bx = b[0], by = b[1], bz = b[2], bw = b[3];
+  out[0] = aw * bx + ax * bw + ay * bz - az * by;
+  out[1] = aw * by - ax * bz + ay * bw + az * bx;
+  out[2] = aw * bz + ax * by - ay * bx + az * bw;
+  out[3] = aw * bw - ax * bx - ay * by - az * bz;
+  return out;
+}
+
+function quatFromYawPitch(out, yaw, pitch) {
+  const halfYaw = yaw * 0.5;
+  const halfPitch = pitch * 0.5;
+  const sy = Math.sin(halfYaw);
+  const cy = Math.cos(halfYaw);
+  const sx = Math.sin(halfPitch);
+  const cx = Math.cos(halfPitch);
+  out[0] = cy * sx;
+  out[1] = sy * cx;
+  out[2] = -sy * sx;
+  out[3] = cy * cx;
+  return quatNormalize(out, out);
 }
 
 function quatSlerp(out, a, b, t) {
@@ -942,6 +968,12 @@ function createGltfEntityRenderer(gl) {
         config: cfg,
         nodeLocal,
         nodeWorld,
+        modelPos: [pos[0], pos[1], pos[2]],
+        modelRot: [rot[0], rot[1], rot[2], rot[3]],
+        modelScale: [sc[0], sc[1], sc[2]],
+        baseModelRot: [rot[0], rot[1], rot[2], rot[3]],
+        lookYaw: 0,
+        lookPitch: 0,
         model,
         animIndex,
         animTime: Number.isFinite(Number(cfg.startTime)) ? Number(cfg.startTime) : 0,
@@ -970,6 +1002,126 @@ function createGltfEntityRenderer(gl) {
     }
     return null;
   };
+
+  const updateInstanceModel = (inst) => {
+    if (!inst) return false;
+    if (!Array.isArray(inst.modelPos) || inst.modelPos.length < 3) return false;
+    if (!Array.isArray(inst.modelRot) || inst.modelRot.length < 4) return false;
+    if (!Array.isArray(inst.modelScale) || inst.modelScale.length < 3) return false;
+    quatNormalize(inst.modelRot, inst.modelRot);
+    mat4FromTRS(inst.model, inst.modelPos, inst.modelRot, inst.modelScale);
+    return true;
+  };
+
+  const solveLookAngles = (
+    from,
+    to,
+    withPitch,
+    currentYaw = 0,
+    currentPitch = 0,
+  ) => {
+    const dx = Number(to[0]) - Number(from[0]);
+    const dy = Number(to[1]) - Number(from[1]);
+    const dz = Number(to[2]) - Number(from[2]);
+    if (!Number.isFinite(dx) || !Number.isFinite(dy) || !Number.isFinite(dz)) {
+      return null;
+    }
+    const horiz = Math.hypot(dx, dz);
+    const dist = Math.hypot(horiz, dy);
+    if (dist <= LOOK_EPSILON) {
+      return {
+        yaw: currentYaw,
+        pitch: withPitch ? currentPitch : 0,
+      };
+    }
+    const yaw = horiz <= LOOK_EPSILON ? currentYaw : Math.atan2(dz, dx);
+    let pitch = withPitch
+      ? Math.atan2(dy, Math.max(horiz, LOOK_EPSILON))
+      : currentPitch;
+    pitch = Math.max(-LOOK_PITCH_LIMIT, Math.min(LOOK_PITCH_LIMIT, pitch));
+    return { yaw, pitch };
+  };
+
+  const applyLookRotation = (inst, yaw, pitch) => {
+    if (!inst) return false;
+    if (!Number.isFinite(yaw) || !Number.isFinite(pitch)) return false;
+    const lookRot = [0, 0, 0, 1];
+    quatFromYawPitch(lookRot, yaw, pitch);
+    quatMul(inst.modelRot, lookRot, inst.baseModelRot ?? [0, 0, 0, 1]);
+    inst.lookYaw = yaw;
+    inst.lookPitch = pitch;
+    return updateInstanceModel(inst);
+  };
+
+  const setRotationQuat = (entityId, x, y, z, w) => {
+    const inst = getInstanceById(entityId);
+    if (!inst) {
+      console.warn("[gltf] setRotationQuat: entity not found", entityId);
+      return false;
+    }
+    const q = [Number(x), Number(y), Number(z), Number(w)];
+    if (!Number.isFinite(q[0]) || !Number.isFinite(q[1]) ||
+      !Number.isFinite(q[2]) || !Number.isFinite(q[3])) {
+      console.warn("[gltf] setRotationQuat: invalid quaternion", q, "entity:", inst.id);
+      return false;
+    }
+    quatNormalize(inst.modelRot, q);
+    return updateInstanceModel(inst);
+  };
+
+  const setYaw = (entityId, yaw) => {
+    const inst = getInstanceById(entityId);
+    if (!inst) {
+      console.warn("[gltf] setYaw: entity not found", entityId);
+      return false;
+    }
+    const yawValue = Number(yaw);
+    if (!Number.isFinite(yawValue)) {
+      console.warn("[gltf] setYaw: invalid yaw", yaw, "entity:", inst.id);
+      return false;
+    }
+    const pitch = Number.isFinite(inst.lookPitch) ? inst.lookPitch : 0;
+    return applyLookRotation(inst, yawValue, pitch);
+  };
+
+  const lookAt = (entityId, tx, ty, tz, withPitch = true) => {
+    const inst = getInstanceById(entityId);
+    if (!inst) {
+      console.warn("[gltf] lookAt: entity not found", entityId);
+      return false;
+    }
+    const target = [Number(tx), Number(ty), Number(tz)];
+    if (!Number.isFinite(target[0]) || !Number.isFinite(target[1]) || !Number.isFinite(target[2])) {
+      console.warn("[gltf] lookAt: invalid target", target, "entity:", inst.id);
+      return false;
+    }
+    const solved = solveLookAngles(
+      inst.modelPos,
+      target,
+      withPitch,
+      Number.isFinite(inst.lookYaw) ? inst.lookYaw : 0,
+      Number.isFinite(inst.lookPitch) ? inst.lookPitch : 0,
+    );
+    if (!solved) return false;
+    return applyLookRotation(inst, solved.yaw, solved.pitch);
+  };
+
+  const lookAtXz = (entityId, tx, tz) => {
+    const inst = getInstanceById(entityId);
+    if (!inst) {
+      console.warn("[gltf] lookAtXz: entity not found", entityId);
+      return false;
+    }
+    return lookAt(
+      entityId,
+      tx,
+      inst.modelPos[1],
+      tz,
+      false,
+    );
+  };
+
+  const lookAtXyz = (entityId, tx, ty, tz) => lookAt(entityId, tx, ty, tz, true);
 
   const setAnimation = (entityId, clip) => {
     const inst = getInstanceById(entityId);
@@ -1220,6 +1372,10 @@ function createGltfEntityRenderer(gl) {
     render,
     setAnimation,
     setTexture,
+    setRotationQuat,
+    setYaw,
+    lookAtXz,
+    lookAtXyz,
     getEntityIds,
     dispose,
     getInstanceCount: () => instances.length,
