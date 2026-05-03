@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "preinstall": "moon build .mooncakes/lepus-apps/lepus/cli/cc --target native --release",
     "build": "moon build --release --target-dir dist && cd -r dist _build/dist && lepus build && cd backend && moon build --release && cd .."
   },
   "devDependencies": {

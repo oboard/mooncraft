@@ -9,7 +9,7 @@ options(
   "is-main": true,
   link: {
     "native": {
-      "cc": "../.mooncakes/lepus-apps/lepus/_build/native/release/build/cli/cc/cc.exe",
+      "cc": ".mooncakes/lepus-apps/lepus/_build/native/release/build/cli/cc/cc.exe",
     },
   },
   "pre-build": [
