@@ -1,0 +1,12 @@
+{
+  "name": "lepus-vite-template",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "moon build --release --target-dir frontend/dist && cp frontend/dist backend/dist && lepus build --frontend-dir backend --out-dir backend && cd backend && moon build --release && cd .."
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}

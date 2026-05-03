@@ -1,0 +1,87 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "kokic/mooncraft/entity"
+
+// Values
+pub const DEFAULT_API_TIMEOUT_MS : Int = 10_000
+
+pub const DEFAULT_DEMO_INTERVAL_MS : Int = 1_500
+
+pub fn clear_entities() -> Unit
+
+pub fn entity_config(String, String, texture? : String, texture_overrides? : Array[TextureIndexOverride], material_texture_overrides? : Array[MaterialTextureOverride], position? : Array[Double], rotation? : Array[Double], scale? : Array[Double], animation? : String, speed? : Double, looped? : Bool) -> GltfEntityConfig
+
+pub fn js_look_at_xyz(String, Double, Double, Double, Int) -> Unit
+
+pub fn js_look_at_xz(String, Double, Double, Int) -> Unit
+
+pub fn js_set_animation(String, String, Int) -> Unit
+
+pub fn js_set_rotation_quat(String, Double, Double, Double, Double, Int) -> Unit
+
+pub fn js_set_scale(String, Double, Double, Double, Int) -> Unit
+
+pub fn js_set_texture(String, String, Int) -> Unit
+
+pub fn js_set_yaw(String, Double, Int) -> Unit
+
+pub fn js_start_animation_cycle(String, Array[String], Int, Int) -> Unit
+
+pub fn js_stop_animation_cycle() -> Unit
+
+pub fn look_at_xyz(String, Double, Double, Double, timeout_ms? : Int) -> Unit
+
+pub fn look_at_xz(String, Double, Double, timeout_ms? : Int) -> Unit
+
+pub fn look_at_xzy(String, Double, Double, Double, timeout_ms? : Int) -> Unit
+
+pub fn material_texture_override(String, String) -> MaterialTextureOverride
+
+pub fn publish_entities(Array[GltfEntityConfig]) -> Unit
+
+pub fn set_animation(String, String, timeout_ms? : Int) -> Unit
+
+pub fn set_rotation_quat(String, Double, Double, Double, Double, timeout_ms? : Int) -> Unit
+
+pub fn set_scale(String, Double, Double, Double, timeout_ms? : Int) -> Unit
+
+pub fn set_texture(String, String, timeout_ms? : Int) -> Unit
+
+pub fn set_yaw(String, Double, timeout_ms? : Int) -> Unit
+
+pub fn start_animation_cycle(String, Array[String], interval_ms? : Int, timeout_ms? : Int) -> Unit
+
+pub fn stop_animation_cycle() -> Unit
+
+pub fn texture_index_override(Int, String) -> TextureIndexOverride
+
+// Errors
+
+// Types and methods
+pub struct GltfEntityConfig {
+  id : String
+  url : String
+  texture : String
+  texture_overrides : Array[TextureIndexOverride]
+  material_texture_overrides : Array[MaterialTextureOverride]
+  position : Array[Double]
+  rotation : Array[Double]
+  scale : Array[Double]
+  animation : String
+  speed : Double
+  looped : Bool
+}
+
+pub struct MaterialTextureOverride {
+  material : String
+  texture : String
+}
+
+pub struct TextureIndexOverride {
+  index : Int
+  texture : String
+}
+
+// Type aliases
+
+// Traits
+

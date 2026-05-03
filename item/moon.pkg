@@ -1,4 +1,0 @@
-import {
-  "kokic/mooncraft/util",
-  "kokic/mooncraft/block/shape",
-}

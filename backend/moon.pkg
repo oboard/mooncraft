@@ -1,0 +1,10 @@
+import {
+  "moonbitlang/core/json",
+  "moonbitlang/async",
+  "lepus-apps/lepus",
+  "lepus-apps/webview",
+}
+
+options(
+  "is-main": true,
+)

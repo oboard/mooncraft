@@ -12,5 +12,3 @@ dist/js/release/
 dist/.moon-lock
 dev/
 AGENTS.md
-
-node_modules/

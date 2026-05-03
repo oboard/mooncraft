@@ -1,0 +1,47 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "kokic/mooncraft/mob"
+
+import {
+  "kokic/mooncraft/entity",
+  "kokic/mooncraft/level",
+}
+
+// Values
+pub const RABBIT_MODEL_URL : String = "./assets/models/rabbit.gltf"
+
+pub const RABBIT_TEXTURE_URL : String = "./assets/images/entity/rabbit_white.png"
+
+pub const RABBIT_Y_BELOW_ZOMBIE : Double = 2.4
+
+pub const RABBIT_Y_OFFSET : Double = -0.05
+
+pub const SNOWMAN_MODEL_URL : String = "./assets/models/snowman_on.gltf"
+
+pub const SNOWMAN_TEXTURE_URL : String = "./assets/images/entity/snowman_face.png"
+
+pub const ZOMBIE_MODEL_URL : String = "./assets/models/zombie.gltf"
+
+pub const ZOMBIE_TEXTURE_URL : String = "./assets/images/entity/zombie.png"
+
+pub const ZOMBIE_Y_OFFSET : Double = 2.35
+
+pub fn demo_entities(@level.World) -> Array[@entity.GltfEntityConfig]
+
+pub fn install_default_demo(@level.World) -> Unit
+
+pub fn rabbit_demo_entities(@level.World) -> Array[@entity.GltfEntityConfig]
+
+pub fn snowman_demo_entities(@level.World) -> Array[@entity.GltfEntityConfig]
+
+pub fn zombie_demo_clips() -> Array[String]
+
+pub fn zombie_demo_entities(@level.World) -> Array[@entity.GltfEntityConfig]
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+

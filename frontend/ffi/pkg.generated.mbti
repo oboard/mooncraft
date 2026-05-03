@@ -1,0 +1,75 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "kokic/mooncraft/ffi"
+
+// Values
+pub const SAVE_STORAGE_KEY : String = "mooncraft.save.v1"
+
+pub fn[T] apply_runtime_state(T) -> Bool
+
+pub fn apply_runtime_state_raw(JsValue) -> Bool
+
+pub fn capture_runtime_state_raw() -> JsValue
+
+pub fn[A, B] cast(A) -> B
+
+pub fn[V] cast_global_set(String, V) -> Unit
+
+pub fn[U, V] cast_object_set(U, String, V) -> Unit
+
+pub fn[T] cast_to_json_string(T) -> String
+
+pub fn[T] console_err(T) -> Unit
+
+pub fn global_set(String, JsValue) -> Unit
+
+pub fn js_console_err(JsValue) -> Unit
+
+pub fn load_saved_world_seed(UInt64, key? : String) -> UInt64
+
+pub fn load_saved_world_type(String, key? : String) -> String
+
+pub fn notify_block_changed(Int, Int, Int, UInt) -> Unit
+
+pub fn object_get(JsValue, String) -> JsValue
+
+pub fn object_has(JsValue, String) -> Bool
+
+pub fn object_set(JsValue, String, JsValue) -> Unit
+
+pub fn runtime_state_snapshot() -> JsValue?
+
+pub fn[T] runtime_state_snapshot_as() -> T?
+
+// Errors
+
+// Types and methods
+#external
+pub type JsMaybe[_]
+pub fn[T] JsMaybe::from_option(T?, none? : Self[T]) -> Self[T]
+pub fn[T] JsMaybe::is_null(Self[T]) -> Bool
+pub fn[T] JsMaybe::is_undefined(Self[T]) -> Bool
+pub fn[T] JsMaybe::null() -> Self[T]
+pub fn[T] JsMaybe::to_option(Self[T]) -> T?
+pub fn[T] JsMaybe::undefined() -> Self[T]
+pub fn[T] JsMaybe::unwrap(Self[T]) -> T
+
+#external
+pub type JsValue
+pub fn JsValue::as_string(Self) -> String
+pub fn[T] JsValue::cast_from(T) -> Self
+pub fn[T] JsValue::cast_to(Self) -> T
+pub fn JsValue::equal(Self, Self) -> Bool
+pub fn[T] JsValue::get(Self, String) -> T
+pub fn JsValue::is_null(Self) -> Bool
+pub fn JsValue::is_undefined(Self) -> Bool
+pub fn JsValue::null() -> Self
+pub fn JsValue::to_json_string(Self) -> String
+pub fn JsValue::undefined() -> Self
+pub fn JsValue::unsafe_as_string(Self) -> String
+pub impl Eq for JsValue
+pub impl Show for JsValue
+
+// Type aliases
+
+// Traits
+

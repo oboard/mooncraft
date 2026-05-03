@@ -1,0 +1,85 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "kokic/mooncraft/player"
+
+import {
+  "kokic/mooncraft/block",
+  "kokic/mooncraft/ffi",
+  "kokic/mooncraft/item",
+  "kokic/mooncraft/level",
+}
+
+// Values
+pub const INVENTORY_GRID_X : Int = 12
+
+pub const INVENTORY_GRID_Y : Int = 9
+
+pub const SPAWN_CHUNK_X : Int = 0
+
+pub const SPAWN_CHUNK_Z : Int = 0
+
+pub const SPAWN_FALLBACK_Y : Int = 16
+
+pub const SPAWN_LOCAL_X : Int = 8
+
+pub const SPAWN_LOCAL_Z : Int = 8
+
+pub const SPAWN_SURFACE_OFFSET : Int = 3
+
+pub fn block_to_ui_item(@block.Block) -> UiItemView
+
+pub fn camera_from_yaw_pitch(Array[Double], Double, Double) -> Camera
+
+pub fn can_place_block(UInt, Array[Double], Double, Double, Int, Int, Int) -> Bool
+
+pub fn collect_hotbar_items() -> Array[UiItemView]
+
+pub fn collect_inventory_items() -> Array[UiItemView]
+
+pub fn compute_spawn_position(@ffi.JsValue, Int, Int, Int, Int, Int, Int, Int, Int, Int) -> @level.SpawnResult
+
+pub let hotbar_blocks : Array[@block.Block]
+
+pub fn item_to_ui_item(@item.Item) -> UiItemView
+
+pub fn move_player(@ffi.JsValue, Int, Array[Double], Double, MoveInput, Double, Double, Double, Double, Int, String) -> Array[Double]
+
+// Errors
+
+// Types and methods
+pub struct Camera {
+  position : Array[Double]
+  direction : Array[Double]
+  center : Array[Double]
+}
+
+pub struct MoveInput {
+  forward : Bool
+  back : Bool
+  left : Bool
+  right : Bool
+  up : Bool
+  down : Bool
+  sprint : Bool
+  fast : Bool
+}
+
+pub struct UiItemView {
+  name : String
+  kind : String
+  shape : String
+  material : String
+  category : String
+  top : UiTexture
+  side : UiTexture
+  bottom : UiTexture
+  texture : UiTexture
+}
+
+pub struct UiTexture {
+  name : String
+}
+
+// Type aliases
+
+// Traits
+

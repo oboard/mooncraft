@@ -1,0 +1,36 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "kokic/mooncraft/model"
+
+import {
+  "kokic/mooncraft/util",
+}
+
+// Values
+pub let default_position : @util.Vec3[Float]
+
+// Errors
+
+// Types and methods
+pub type Humanoid
+
+pub enum HumanoidJoint {
+  Head
+  Body
+  LeftArm
+  RightArm
+  LeftLeg
+  RightLeg
+}
+
+pub enum Joint {
+  Human(HumanoidJoint)
+  Custom(String)
+}
+
+// Type aliases
+
+// Traits
+pub trait Localizable {
+  position(Joint) -> @util.Vec3[Float]
+}
+
