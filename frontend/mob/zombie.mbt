@@ -1,8 +1,8 @@
 ///|
-pub const ZOMBIE_MODEL_URL : String = "./assets/models/zombie.gltf"
+pub const ZOMBIE_MODEL_URL : String = "assets/models/zombie.gltf"
 
 ///|
-pub const ZOMBIE_TEXTURE_URL : String = "./assets/images/entity/zombie.png"
+pub const ZOMBIE_TEXTURE_URL : String = "assets/images/entity/zombie.png"
 
 ///|
 pub const ZOMBIE_Y_OFFSET : Double = 2.35

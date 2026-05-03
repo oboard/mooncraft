@@ -1,8 +1,8 @@
 ///|
-pub const SNOWMAN_MODEL_URL : String = "./assets/models/snowman_on.gltf"
+pub const SNOWMAN_MODEL_URL : String = "assets/models/snowman_on.gltf"
 
 ///|
-pub const SNOWMAN_TEXTURE_URL : String = "./assets/images/entity/snowman_face.png"
+pub const SNOWMAN_TEXTURE_URL : String = "assets/images/entity/snowman_face.png"
 
 ///|
 pub fn snowman_demo_entities(

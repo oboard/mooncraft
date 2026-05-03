@@ -6,10 +6,10 @@ You can load entity models by providing `dist/assets/models/entities.json`:
 [
   {
     "id": "pig_0",
-    "url": "./assets/models/pig.gltf",
-    "texture": "./assets/images/entity/pig.png",
+    "url": "assets/models/pig.gltf",
+    "texture": "assets/images/entity/pig.png",
     "materialTextures": {
-      "Body": "./assets/images/entity/pig.png"
+      "Body": "assets/images/entity/pig.png"
     },
     "position": [8, 70, 8],
     "rotation": [0, 0, 0, 1],
@@ -26,8 +26,8 @@ You can also bypass the manifest and inject at runtime:
 ```js
 window.mcGltfEntities = [
   {
-    url: "./assets/models/zombie.gltf",
-    texture: "./assets/images/entity/zombie.png",
+    url: "assets/models/zombie.gltf",
+    texture: "assets/images/entity/zombie.png",
     animation: "animation.zombie.walk",
     position: [0, 68, 0],
   },
@@ -37,7 +37,7 @@ window.mcGltfEntities = [
 Optional manifest path override:
 
 ```js
-window.mcGltfEntityManifestUrl = "./assets/models/my-entities.json";
+window.mcGltfEntityManifestUrl = "assets/models/my-entities.json";
 ```
 
 Runtime API (available after renderer init):
@@ -45,7 +45,7 @@ Runtime API (available after renderer init):
 ```js
 // by entity id from config, or numeric index
 await window.mcGltfEntityApi.setAnimation("zombie_0", "animation.zombie.walk");
-await window.mcGltfEntityApi.setTexture("zombie_0", "./assets/images/entity/zombie.png");
+await window.mcGltfEntityApi.setTexture("zombie_0", "assets/images/entity/zombie.png");
 await window.mcGltfEntityApi.setYaw("zombie_0", Math.PI * 0.5);
 await window.mcGltfEntityApi.setScale("zombie_0", 1.0, 1.0, 1.0);
 await window.mcGltfEntityApi.lookAtXz("zombie_0", 12, 8); // yaw only
@@ -85,9 +85,9 @@ MoonBit typed override example:
 ```mbt
 let cfg = @entity.entity_config(
   "zombie_skin_a",
-  "./assets/models/zombie.gltf",
-  texture_overrides=[@entity.texture_index_override(0, "./assets/images/entity/zombie.png")],
-  material_texture_overrides=[@entity.material_texture_override("Body", "./assets/images/entity/zombie.png")],
+  "assets/models/zombie.gltf",
+  texture_overrides=[@entity.texture_index_override(0, "assets/images/entity/zombie.png")],
+  material_texture_overrides=[@entity.material_texture_override("Body", "assets/images/entity/zombie.png")],
   position=[0.0, 68.0, 0.0],
   animation="animation.zombie.walk",
 )
