@@ -8,9 +8,12 @@ target
 .moonagent/
 .local/
 .old-demo/
-dist/js/release/
+dist/js
+dist/native
 dist/.moon-lock
 dev/
 AGENTS.md
 
 node_modules/
+
+backend/dist.zip.mbt
